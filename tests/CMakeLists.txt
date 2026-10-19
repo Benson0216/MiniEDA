@@ -9,6 +9,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(minieda_tests
     test_main.cpp
+    test_entities.cpp
 )
 
 target_link_libraries(minieda_tests

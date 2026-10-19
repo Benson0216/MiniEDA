@@ -1,6 +1,6 @@
 #include <iostream>
 
 int main() {
-    std::cout << "RayForge" << '\n';
+    std::cout << "MiniEDA" << '\n';
     return 0;
 }
