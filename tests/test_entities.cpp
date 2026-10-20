@@ -5,25 +5,6 @@
 #include "net.h"
 
 
-TEST(MiniEDATest, ChangeOfPinId) {
-    
-    std::vector<Pin> pins;
-    Pin p;
-    
-    p.setId(1);
-    pins.push_back(p);
-
-    p.setId(2);
-    pins.push_back(p);
-
-    auto& begin = pins[0];
-    auto& end = pins[1];    
-    
-    EXPECT_TRUE(begin.getId() == 1);
-    EXPECT_TRUE(end.getId() == 2);
-    EXPECT_TRUE(begin.getId() != end.getId());
-}
-
 TEST(MiniEDATest, AppendPinInNetAndChangePinId) {
 
     Component comp;

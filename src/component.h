@@ -12,9 +12,7 @@ public:
 
     Pin& addPin() {
 
-        auto pin = std::make_unique<Pin>();
-
-        pins_.push_back(std::move(pin));
+        pins_.push_back(std::unique_ptr<Pin>(new Pin()));
 
         return *pins_.back();
     }

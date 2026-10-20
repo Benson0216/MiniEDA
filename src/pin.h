@@ -3,8 +3,6 @@
 
 class Pin{
 public: 
-    Pin(): id_(0) {}
-
     void setId(int value){
         id_ = value;
     }
@@ -13,6 +11,12 @@ public:
         return id_;
     }
 
+    Pin(const Pin&) = delete;
+    
+    Pin& operator=(const Pin&) = delete;
+
 private:
+    friend class Component;
+    Pin(): id_(0) {}
     int id_;
 };
