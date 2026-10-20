@@ -11,8 +11,6 @@ public:
     void append(const Pin& pin) {
         pins_.push_back(pin);
     }
-    
-    void append(Pin&&) = delete;
 
     const std::vector<std::reference_wrapper<const Pin>>& pins() const { 
         return pins_; 
