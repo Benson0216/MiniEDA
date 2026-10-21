@@ -1,15 +1,15 @@
 #pragma once
 
+#include <string>
+#include <utility>
+
 
 class Pin{
 public: 
-    void setId(int value){
-        id_ = value;
-    }
 
-    int getId() const {
-        return id_;
-    }
+    const std::string& getName() const { return name_; }
+
+    const std::string& getNumber() const { return number_; }
 
     Pin(const Pin&) = delete;
     
@@ -17,6 +17,8 @@ public:
 
 private:
     friend class Component;
-    Pin(): id_(0) {}
-    int id_;
+    Pin(std::string number, std::string name)
+        : number_(std::move(number)), name_(std::move(name)) {}
+    std::string number_;
+    std::string name_;
 };
