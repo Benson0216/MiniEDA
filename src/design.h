@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "component.h"
 #include "net.h"
@@ -9,9 +10,11 @@
 
 class Design {
 public:
-    Component& addComponent() {
-        
-        auto comp = std::make_unique<Component>();
+    Component& addComponent(
+        std::string name
+    ) 
+    {
+        auto comp = std::make_unique<Component>(name);
         
         components_.push_back(std::move(comp));
 
