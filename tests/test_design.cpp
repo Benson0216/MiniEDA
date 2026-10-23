@@ -54,3 +54,15 @@ TEST (DesignTest, FindMissingPinThrows) {
 
     EXPECT_THROW(comp.findPin("99"), std::invalid_argument);
 }
+
+TEST (DesignTest, FindPinReturnsSameObject) {
+    Design design;
+
+    auto& comp = design.addComponent("test");
+
+    auto& pin2 = comp.addPin(
+        "2", "pin2"
+    );
+
+    EXPECT_TRUE(&comp.findPin("2") == &pin2);
+}
