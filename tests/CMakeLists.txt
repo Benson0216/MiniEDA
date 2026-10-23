@@ -11,6 +11,7 @@ add_executable(minieda_tests
     test_main.cpp
     test_entities.cpp
     test_design.cpp
+    test_string_utils.cpp
 )
 
 target_link_libraries(minieda_tests
