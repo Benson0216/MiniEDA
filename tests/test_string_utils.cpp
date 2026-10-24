@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <stdexcept>
 #include <string>
 
 #include "string_utils.h"
@@ -63,4 +64,42 @@ TEST (StringUtilsTest, SplitPinRefRejectsMissingDot)
     EXPECT_THROW(splitPinRef(text1), std::invalid_argument);
     EXPECT_THROW(splitPinRef(text2), std::invalid_argument);
     EXPECT_THROW(splitPinRef(text3), std::invalid_argument);
+}
+
+
+TEST (StringUtilsTest, SplitStandardPinDef)
+{
+    const std::string text("1=IN");
+    auto pairs = splitPinDef(text);
+
+    EXPECT_EQ(pairs.first, "1");
+    EXPECT_EQ(pairs.second, "IN");
+}
+
+
+TEST (StringUtilsTest, SplitPinDefWithMultipleEqualSigns)
+{
+    const std::string text("1=A=B");
+    auto pairs = splitPinDef(text);
+
+    EXPECT_EQ(pairs.first, "1");
+    EXPECT_EQ(pairs.second, "A=B");
+}
+
+
+TEST (StringUtilsTest, SplitPinDefRejectsMissingEqualSign)
+{
+    const std::string text("1");
+
+    EXPECT_THROW(splitPinDef(text), std::invalid_argument);
+}
+
+
+TEST (StringUtilsTest, SplitPinDefRejectsMissingNumberOrName)
+{
+    const std::string text1("=IN");
+    const std::string text2("1=");
+
+    EXPECT_THROW(splitPinDef(text1), std::invalid_argument);
+    EXPECT_THROW(splitPinDef(text2), std::invalid_argument);
 }

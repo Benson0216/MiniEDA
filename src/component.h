@@ -12,7 +12,7 @@
 class Component {
 public: 
     explicit Component(std::string name)
-        : name_(name) {}
+        : name_(std::move(name)) {}
 
     const std::string& getName() const { return name_; }
 
@@ -51,7 +51,8 @@ public:
         }
 
         throw std::invalid_argument(
-            "Number not found");
+            "number not found: " + number
+        );
     }
     
 private:

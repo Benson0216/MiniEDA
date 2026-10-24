@@ -12,6 +12,15 @@ add_executable(minieda_tests
     test_entities.cpp
     test_design.cpp
     test_string_utils.cpp
+    test_parser.cpp
+)
+
+target_compile_options(minieda_tests 
+    PRIVATE -Wall -Wextra -fsanitize=address,undefined -fno-omit-frame-pointer
+)
+
+target_link_options(minieda_tests 
+    PRIVATE -fsanitize=address,undefined
 )
 
 target_link_libraries(minieda_tests

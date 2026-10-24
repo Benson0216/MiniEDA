@@ -5,14 +5,14 @@
 #include "net.h"
 
 
-TEST(MiniEDATest, NetHoldsSamePinAsComponent) {
+TEST(MiniEDATest, ComponentTest) {
 
     Component comp("comp");
     auto& comp_pin = comp.addPin(
         "1", "pin1"
     );
 
-    Net net;
+    Net net("VDD");
     net.append(comp_pin);
     auto& pins = net.pins();
     const auto& first_net_pin = pins[0];
