@@ -17,8 +17,10 @@ public:
 
 private:
     friend class Component;
-    Pin(std::string number, std::string name)
-        : number_(std::move(number)), name_(std::move(name)) {}
+    Pin(
+        std::string number, 
+        std::string name
+    ) : number_(std::move(number)), name_(std::move(name)) {}
     std::string number_;
     std::string name_;
 };
