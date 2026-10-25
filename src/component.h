@@ -29,7 +29,8 @@ public:
         
         if (duplicated) {
             throw std::invalid_argument(
-                "duplicate pin number: " + number);
+                "duplicate pin number: " + name_ + "." + number
+            );
         }
 
         pins_.push_back(std::unique_ptr<Pin>(
@@ -51,7 +52,7 @@ public:
         }
 
         throw std::invalid_argument(
-            "number not found: " + number
+            "pin not found: " + name_ + "." + number
         );
     }
     

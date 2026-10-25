@@ -49,9 +49,17 @@ TEST (ParserTest, ParseStandardNetList)
 
 TEST (ParserTest, EmptyLinesAndCommentsAreSkipped)
 {
+    std::istringstream in(
+        "\n"
+        "# a comment\n"
+        "#NoSpaceComment\n"
+        "   \n"
+    );
     Design design;
+    parseNetlist(in, design);
 
     EXPECT_EQ(design.componentCount(), 0u);
+    EXPECT_EQ(design.netCount(), 0u);
 }
 
 
@@ -111,7 +119,7 @@ TEST (ParserTest, InvalidReferenceThrows)
         errorOf(
             "NET GND U1\n"
         ), 
-        "line 1: Invalid reference: U1"
+        "line 1: invalid reference: U1"
     );
 }
 
@@ -133,7 +141,7 @@ TEST (ParserTest, DuplicatePinNumberThrows)
         errorOf(
             "COMP U1 1=A 1=B\n"
         ), 
-        "line 1: duplicate pin number: 1"
+        "line 1: duplicate pin number: U1.1"
     );
 }
 
@@ -144,7 +152,7 @@ TEST (ParserTest, PinNumberNotExistsThrows)
         errorOf(
             "COMP R1 1=A\nNET GND R1.9\n"
         ), 
-        "line 2: number not found: 9"
+        "line 2: pin not found: R1.9"
     );
 }
 

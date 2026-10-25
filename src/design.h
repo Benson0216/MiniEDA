@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <cstddef>
+#include<utility>
 
 #include "component.h"
 #include "net.h"
