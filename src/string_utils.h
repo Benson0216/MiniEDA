@@ -33,7 +33,7 @@ inline std::pair<std::string, std::string> splitPinRef(
     
     if (pos == std::string::npos) {
         throw std::invalid_argument(
-            "Invalid reference: " + ref);
+            "invalid reference: " + ref);
     }
 
     std::string comp_name = ref.substr(0, pos);
@@ -42,7 +42,7 @@ inline std::pair<std::string, std::string> splitPinRef(
     if (comp_name.empty() || 
         pin_number.empty()) {
         throw std::invalid_argument(
-            "Invalid reference: " + ref);
+            "invalid reference: " + ref);
     }
 
     return {comp_name, pin_number};
