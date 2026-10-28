@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <utility>
 
 #include "pin.h"
 
@@ -41,9 +42,9 @@ public:
         return *pins_.back();
     }
 
-    Pin& findPin(
+    const Pin& findPin (
         const std::string& number
-    ) 
+    ) const
     {
         for (const auto& p: pins_) {
             if (p->getNumber() == number) {
@@ -54,6 +55,16 @@ public:
         throw std::invalid_argument(
             "pin not found: " + name_ + "." + number
         );
+    }
+
+    std::vector<const Pin*> pins() const 
+    {
+        std::vector<const Pin*> result;
+        result.reserve(pins_.size());
+        for (const auto& p : pins_) {
+            result.push_back(p.get());
+        }
+        return result;
     }
     
 private:

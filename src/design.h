@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <cstddef>
-#include<utility>
+#include <utility>
 
 #include "component.h"
 #include "net.h"
@@ -26,10 +26,13 @@ public:
         }
 
         auto comp = std::make_unique<Component>(std::move(name));
-        component_map_[comp->getName()] = comp.get();
+        //Push back item into vector before register pointer in map
+        //Avoid pointer referenced at released object
         components_.push_back(std::move(comp));
+        Component& ref = *components_.back();
+        component_map_[ref.getName()] = &ref;
 
-        return *components_.back();
+        return ref;
     }
 
     Net& addNet(
@@ -44,10 +47,11 @@ public:
         }
 
         auto net = std::make_unique<Net>(std::move(name));
-        net_map_[net->getName()] = net.get();
         nets_.push_back(std::move(net));
+        Net& ref = *nets_.back();
+        net_map_[ref.getName()] = &ref;
 
-        return *nets_.back();
+        return ref;
     }
 
     Component& findComponent(
@@ -64,9 +68,35 @@ public:
         return *it->second;
     }
 
+    const Component& findComponent(
+        const std::string& name
+    ) const 
+    {
+        auto it = component_map_.find(name);
+        if (it == component_map_.end()) {
+            throw std::invalid_argument(
+                "component not found: " + name);
+        }
+        return *it->second;
+    }
+
     Net& findNet(
         const std::string& name
     )
+    {
+        auto it = net_map_.find(name);
+        if (it == net_map_.end()) {
+            throw std::invalid_argument(
+                "net not found: " + name
+            );
+        }
+
+        return *it->second;
+    }
+
+    const Net& findNet(
+        const std::string& name
+    ) const
     {
         auto it = net_map_.find(name);
         if (it == net_map_.end()) {
@@ -86,6 +116,26 @@ public:
     std::size_t netCount() const
     {
         return nets_.size();
+    }
+
+    std::vector<const Component*> components() const 
+    {
+        std::vector<const Component*> result;
+        result.reserve(components_.size());
+        for (const auto& c : components_) {
+            result.push_back(c.get());
+        }
+        return result;
+    }
+
+    std::vector<const Net*> nets() const 
+    {
+        std::vector<const Net*> result;
+        result.reserve(nets_.size());
+        for (const auto& n : nets_) {
+            result.push_back(n.get());
+        }
+        return result;
     }
 
 private:

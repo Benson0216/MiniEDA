@@ -57,7 +57,7 @@ inline std::pair<std::string, std::string> splitPinDef(
 
     if (pos == std::string::npos ) {
         throw std::invalid_argument(
-            "Invalid definition: " + def);
+            "invalid definition: " + def);
     }
 
     std::string number = def.substr(0, pos);
@@ -66,7 +66,7 @@ inline std::pair<std::string, std::string> splitPinDef(
     if (number.empty() || 
         name.empty()) {
         throw std::invalid_argument(
-            "Invalid definition: " + def);
+            "invalid definition: " + def);
     }
 
     return {number, name};

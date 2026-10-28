@@ -130,7 +130,7 @@ TEST (ParserTest, InvalidDefinitionThrows)
         errorOf(
             "COMP U1 1=IN 2=\n"
         ), 
-        "line 1: Invalid definition: 2="
+        "line 1: invalid definition: 2="
     );
 }
 
@@ -179,12 +179,20 @@ TEST (ParserTest, DuplicateNetThrows)
 }
 
 
-TEST (ParserTest, LineBreakNotThrows)
+TEST (ParserTest, WindowsLineEndingsAreAccepted)
 {
-    EXPECT_EQ(
-        errorOf(
-            "COMP R1 1=A\r\n"
-        ), 
-        ""
+    std::istringstream in(
+        "COMP R1 1=A\r\n"
+    );
+
+    Design design;
+
+    parseNetlist(
+        in,
+        design
+    );
+
+    EXPECT_TRUE(
+        design.findComponent("R1").findPin("1").getName() == "A"
     );
 }
