@@ -121,3 +121,17 @@ TEST (DesignTest, FindMissingNetThrows)
 
     EXPECT_THROW(design.findNet("GND"), std::invalid_argument);
 }
+
+
+TEST (DesignTest, ComponentsReturnedInInsertionOrder)
+{
+    Design design;
+    auto& r1 = design.addComponent("R1");
+    auto& r2 = design.addComponent("R2");
+
+    auto comps = design.components();
+
+    ASSERT_EQ(comps.size(), 2u);
+    EXPECT_EQ(comps[0], &r1);
+    EXPECT_EQ(comps[1], &r2);
+}
