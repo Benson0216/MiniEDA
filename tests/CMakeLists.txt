@@ -13,6 +13,7 @@ add_executable(minieda_tests
     test_design.cpp
     test_string_utils.cpp
     test_parser.cpp
+    test_analysis.cpp
 )
 
 target_compile_options(minieda_tests 
