@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cstddef>
 
 #include "design.h"
 #include "parser.h"
@@ -39,6 +40,38 @@ namespace
         
         return results;
     }
+
+
+    std::vector<std::string> describe(
+        const std::vector<PinConflict>& conflicts
+    )
+    {
+        std::vector<std::string> results;
+
+        for (const PinConflict& conf: conflicts)
+        {
+            std::string merged_nets;
+            
+            if (!conf.nets.empty())
+            {
+                merged_nets += conf.nets[0]->getName();
+            }
+            for (std::size_t i = 1; i < conf.nets.size(); ++i)
+            {
+                merged_nets += "," + conf.nets[i]->getName();
+            }
+
+            results.push_back(
+                conf.pin.component->getName() + 
+                "." +
+                conf.pin.pin->getNumber() +
+                ":" +
+                merged_nets
+            );
+        }
+
+        return results;
+    }
 }
 
 
@@ -55,7 +88,7 @@ TEST (AnalysisTest, FindsFloatingPinsAndDanglingNets)
               (std::vector<std::string>{"R1.2"}));
 
     auto dangling = findDanglingNets(design);
-    ASSERT_EQ(dangling.size(), 1u);
+    EXPECT_EQ(dangling.size(), 1u);
     EXPECT_EQ(dangling[0]->getName(), "LONELY");
 }
 
@@ -69,11 +102,11 @@ TEST (AnalysisTest, EmptyFloatingPinsAndDanglingNets)
         "NET N2 U1.2 R1.2\n"
     );
 
-    ASSERT_EQ(names(findFloatingPins(design)), 
+    EXPECT_EQ(names(findFloatingPins(design)), 
               std::vector<std::string>{});
 
     auto dangling = findDanglingNets(design);
-    ASSERT_EQ(dangling.size(), 0u);
+    EXPECT_EQ(dangling.size(), 0u);
 }
 
 
@@ -81,11 +114,11 @@ TEST (AnalysisTest, EmptyDesignWithEmptyFloatingPinsAndDanglingNets)
 {
     Design design = makeDesign("");
 
-    ASSERT_EQ(names(findFloatingPins(design)), 
+    EXPECT_EQ(names(findFloatingPins(design)), 
               std::vector<std::string>{});
 
     auto dangling = findDanglingNets(design);
-    ASSERT_EQ(dangling.size(), 0u);
+    EXPECT_EQ(dangling.size(), 0u);
 }
 
 
@@ -157,4 +190,72 @@ TEST (AnalysisTest, SamePinConnectWithMultipleNets)
         (std::vector<std::string>{"U1.2"})
     );
     EXPECT_TRUE(findDanglingNets(design).empty());
+}
+
+
+TEST (AnalysisTest, ReportsPinSharedByTwoNets)
+{
+    Design design = makeDesign(
+        "COMP U1 1=A 2=B\n"
+        "COMP R1 1=A 2=B\n"
+        "NET A U1.1 R1.1\n"
+        "NET B U1.1 R1.2\n"
+        "NET C U1.2 R1.2"
+    );
+
+    auto conflicts = findPinsOnMultipleNets(design);
+    
+    EXPECT_EQ(
+        describe(conflicts),
+        (std::vector<std::string>{"U1.1:A,B", "R1.2:B,C"})
+    );
+}
+
+
+TEST (AnalysisTest, IgnoresDuplicatePinInSameNet)
+{
+    Design design = makeDesign(
+        "COMP U1 1=A 2=B\n"
+        "COMP R1 1=A 2=B\n"
+        "NET A U1.1 U1.1\n"
+    );
+
+    auto conflicts = findPinsOnMultipleNets(design);
+    
+    ASSERT_EQ(conflicts.size(), 0u);
+}
+
+
+TEST (AnalysisTest, FindNoConflicts)
+{
+    Design design = makeDesign(
+        "COMP U1 1=A 2=B\n"
+        "COMP R1 1=A 2=B\n"
+        "NET A U1.1 R1.1\n"
+        "NET C U1.2 R1.2\n"
+    );
+
+    auto conflicts = findPinsOnMultipleNets(design);
+    
+    ASSERT_EQ(conflicts.size(), 0u);
+}
+
+TEST (AnalysisTest, ReportsPinSharedByThreeNets)
+{
+    Design design = makeDesign(
+        "COMP U1 1=A\n"
+        "COMP R1 1=A 2=B\n"
+        "COMP R2 1=A\n"
+        "NET A U1.1 R1.1\n"
+        "NET B U1.1 R1.2\n"
+        "NET C U1.1 R2.1\n"
+    );
+
+    auto conflicts = findPinsOnMultipleNets(design);
+    
+    ASSERT_EQ(conflicts.size(), 1u);
+    EXPECT_EQ(
+        describe(conflicts),
+        (std::vector<std::string>{"U1.1:A,B,C"})
+    );
 }
