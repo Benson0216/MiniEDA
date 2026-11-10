@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 #include <vector>
+#include <unordered_map>
 
 #include "design.h"
 
@@ -9,6 +10,12 @@
 struct PinRef {
     const Component* component;
     const Pin* pin;
+};
+
+
+struct PinConflict {
+    PinRef pin;
+    std::vector<const Net*> nets;   // 該 Pin 所屬的所有不同 Net，至少 2 個
 };
 
 
@@ -66,4 +73,39 @@ inline std::vector<const Net*> findDanglingNets(
     }
 
     return nets;
+}
+
+
+inline std::vector<PinConflict> findPinsOnMultipleNets(
+    const Design& design
+)
+{
+    std::unordered_map<const Pin*, std::vector<const Net*>> nets_of_pin;
+
+    for (const Net* n: design.nets())
+    {
+        for (const Pin& p: n->pins())
+        {
+            auto& nets = nets_of_pin[&p];
+            if (nets.empty() || nets.back() != n) {
+                nets.push_back(n);
+            }
+        }
+    }
+
+    std::vector<PinConflict> conflicts;
+
+    for (const Component* comp : design.components())
+    {
+        for (const Pin* pin : comp->pins())
+        {
+            auto it = nets_of_pin.find(pin);
+            if (it != nets_of_pin.end() && it->second.size() >= 2)
+            {
+                conflicts.push_back({{comp, pin}, it->second});
+            }
+        }
+    }
+
+    return conflicts;
 }
